@@ -28,7 +28,7 @@ const getJSON = function (url, errorMsg = 'Something went wrong') {
 
 const fetchUserData = function () {
     getJSON('https://jsonplaceholder.typicode.com/users')
-        .then(data => data.forEach(user => renderUserRow(user)))
+        .then(users => users.forEach(user => renderUserRow(user)))
         .catch(err => renderError(`Something went wrong: ${err.message}`));
 };
 
