@@ -1,26 +1,35 @@
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded and parsed");
-    console.log("Hello from script.js");
+'use strict';
 
-    const output = fetch('https://jsonplaceholder.typicode.com/users/1')
-        .then((response) => {
-            console.log('Inside then() ', response);
-            return response.json()
-        })
-        .catch((error) => {
-            console.log('Inside catch() ', error);
-        })
-        .finally(() => {
-            console.log('Inside finally()');
-        });
+const userTableBody = document.querySelector('.user-table tbody');
 
-    console.log('Output from Fetch(): ', output, 'Type Of: ', typeof output, 'Promise: ', output instanceof Promise);
+const renderUserRow = function (user) {
+    const html = `
+    <tr>
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${user.phone}</td>
+    </tr>
+  `;
+    userTableBody.insertAdjacentHTML('beforeend', html);
+};
 
-    output.then((data) => {
-        console.log('Output Received', data);
-        // document.getElementById('output').innerHTML = JSON.stringify(data);
-        const name = document.querySelector('#name');
-        name.textContent = data.name;
+const renderError = function (msg) {
+    const html = `<tr><td colspan="4">${msg}</td></tr>`;
+    userTableBody.insertAdjacentHTML('beforeend', html);
+};
+
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+    return fetch(url).then(response => {
+        if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+        return response.json();
     });
+};
 
-});
+const fetchUserData = function () {
+    getJSON('https://jsonplaceholder.typicode.com/users')
+        .then(data => data.forEach(user => renderUserRow(user)))
+        .catch(err => renderError(`Something went wrong: ${err.message}`));
+};
+
+document.addEventListener('DOMContentLoaded', fetchUserData);
